@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XanaduTool | 多功能文件处理平台</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5649C0;
+            --secondary: #A29BFE;
+            --dark: #2D3436;
+            --light: #F5F6FA;
+            --gray: #636E72;
+            --success: #00B894;
+            --danger: #D63031;
+            --warning: #FDCB6E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background-color: #F5F6FA;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+        
+        .main-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+        
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tool-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(108, 92, 231, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: var(--primary);
+        }
+        
+        .tool-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .tool-desc {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(108, 92, 231, 0.1);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: block;
+            padding: 1rem;
+            border: 2px dashed rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .file-label:hover {
+            border-color: var(--primary);
+            background-color: rgba(108, 92, 231, 0.05);
+        }
+        
+        .file-label i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .file-info {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .file-selected {
+            display: none;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: rgba(108, 92, 231, 0.05);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .file-selected-name {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-selected-size {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+        
+        .file-selected-type {
+            color: var(--gray);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .options {
+            margin-top: 1rem;
+        }
+        
+        .option-group {
+            margin-bottom: 1rem;
+        }
+        
+        .option-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .option-input {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .option-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .checkbox-input {
+            margin-right: 0.5rem;
+        }
+        
+        .preview-area {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .editor-area {
+            display: none;
+            width: 100%;
+            height: 200px;
+            padding: 0.8rem;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-family: monospace;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-bar {
+            display: none;
+            height: 6px;
+            background-color: rgba(108, 92, 231, 0.1);
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .result-area {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(108, 92, 231, 0.05);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .result-icon {
+            font-size: 2rem;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-text {
+            font-weight: 500;
+        }
+        
+        .download-btn {
+            margin-top: 1rem;
+        }
+        
+        .format-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .format-btn {
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background-color: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .format-btn:hover {
+            background-color: rgba(108, 92, 231, 0.2);
+        }
+        
+        .format-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <span>XanaduTool</span>
+            </div>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+        
+        <h1 class="main-title">多功能文件处理平台</h1>
+        <p class="subtitle">支持多种格式的压缩、转换、编辑和加密 - 一站式文件处理解决方案</p>
+        
+        <div class="tool-grid">
+            <!-- 压缩工具 -->
+            <div class="tool-card" id="compressTool">
+                <div class="tool-header">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-archive"></i>
+                    </div>
+                    <h3 class="tool-title">压缩文件</h3>
+                </div>
+                <p class="tool-desc">将您的文件或文件夹压缩为多种格式，减小文件大小便于分享和存储。</p>
+                
+                <input type="file" id="compressInput" class="file-input" multiple webkitdirectory>
+                <label for="compressInput" class="file-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>选择文件或文件夹</span>
+                    <div class="file-info">支持多文件选择和整个文件夹</div>
+                </label>
+                
+                <div class="file-selected" id="compressFileInfo"></div>
+                
+                <div class="options">
+                    <div class="option-group">
+                        <label class="option-label">输出格式</label>
+                        <div class="format-options">
+                            <button class="format-btn active" data-format="zip">ZIP</button>
+                            <button class="format-btn" data-format="tar">TAR</button>
+                            <button class="format-btn" data-format="7z">7Z</button>
+                        </div>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label class="option-label">压缩级别</label>
+                        <select class="option-input" id="compressLevel">
+                            <option value="1">快速压缩</option>
+                            <option value="3" selected>标准压缩</option>
+                            <option value="6">高压缩率</option>
+                            <option value="9">最大压缩</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group">
+                        <label class="option-label">输出文件名</label>
+                        <input type="text" class="option-input" id="compressOutputName" placeholder="archive.zip" value="archive.zip">
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox-input" id="compressEncrypt">
+                        <label for="compressEncrypt">加密压缩文件</label>
+                    </div>
+                    
+                    <div class="option-group" id="compressPasswordGroup" style="display: none;">
+                        <label class="option-label">设置密码</label>
+                        <input type="password" class="option-input" id="compressPassword" placeholder="输入密码">
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="compressBtn">开始压缩</button>
+                
+                <div class="progress-bar" id="compressProgress">
+                    <div class="progress" id="compressProgressBar"></div>
+                </div>
+                
+                <div class="result-area" id="compressResult">
+                    <div class="result-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="result-text">压缩完成!</div>
+                    <button class="btn btn-outline download-btn" id="compressDownload">下载压缩文件</button>
+                </div>
+            </div>
+            
+            <!-- 文件转换工具 -->
+            <div class="tool-card" id="convertTool">
+                <div class="tool-header">
+                    <div class="tool-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3 class="tool-title">文件转换</h3>
+                </div>
+                <p class="tool-desc">将文件转换为其他格式，支持文档、图片、音频等多种类型。</p>
+                
+                <input type="file" id="convertInput" class="file-input">
+                <label for="convertInput" class="file-label">
+                    <i class="fas fa-file-import"></i>
+                    <span>选择要转换的文件</span>
+                    <div class="file-info">支持多种格式输入</div>
+                </label>
+                
+                <div class="file-selected" id="convertFileInfo"></div>
+                
+                <div class="options">
+                    <div class="option-group">
+                        <label class="option-label">目标格式</label>
+                        <select class="option-input" id="targetFormat">
+                            <optgroup label="文档">
+                                <option value="pdf">PDF</option>
+                                <option value="docx">DOCX</option>
+                                <option value="txt">TXT</option>
+                                <option value="html">HTML</option>
+                            </optgroup>
+                            <optgroup label="图片">
+                                <option value="jpg">JPG</option>
+                                <option value="png">PNG</option>
+                                <option value="webp">WEBP</option>
+                                <option value="svg">SVG</option>
+                            </optgroup>
+                            <optgroup label="音频">
+                                <option value="mp3">MP3</option>
+                                <option value="wav">WAV</option>
+                                <option value="ogg">OGG</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    
+                    <div class="option-group" id="convertOptions">
+                        <!-- 动态加载的转换选项 -->
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="convertBtn">开始转换</button>
+                
+                <div class="progress-bar" id="convertProgress">
+                    <div class="progress" id="convertProgressBar"></div>
+                </div>
+                
+                <div class="result-area" id="convertResult">
+                    <div class="result-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="result-text">转换完成!</div>
+                    <button class="btn btn-outline download-btn" id="convertDownload">下载转换文件</button>
+                </div>
+            </div>
+            
+            <!-- 文件预览与编辑 -->
+            <div class="tool-card" id="previewTool">
+                <div class="tool-header">
+                    <div class="tool-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="tool-title">文件预览与编辑</h3>
+                </div>
+                <p class="tool-desc">预览多种文件内容并直接编辑文本文件，修改文件后缀名等。</p>
+                
+                <input type="file" id="previewInput" class="file-input">
+                <label for="previewInput" class="file-label">
+                    <i class="fas fa-file"></i>
+                    <span>选择文件</span>
+                    <div class="file-info">支持文本、图片、PDF、Office文档等</div>
+                </label>
+                
+                <div class="file-selected" id="previewFileInfo"></div>
+                
+                <div class="options">
+                    <div class="option-group">
+                        <label class="option-label">修改文件后缀</label>
+                        <input type="text" class="option-input" id="fileExtension" placeholder="例如: .txt">
+                    </div>
+                </div>
+                
+                <button class="btn btn-outline" id="renameBtn">修改后缀</button>
+                <button class="btn btn-primary" id="previewBtn">预览文件</button>
+                
+                <div class="preview-area" id="filePreview">
+                    <h4>文件内容预览</h4>
+                    <div id="previewContent"></div>
+                </div>
+                
+                <textarea class="editor-area" id="fileEditor" placeholder="编辑文件内容..."></textarea>
+                
+                <button class="btn btn-primary" id="saveEditBtn" style="display: none;">保存修改</button>
+                
+                <div class="result-area" id="editResult" style="display: none;">
+                    <div class="result-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="result-text">编辑完成!</div>
+                    <button class="btn btn-outline download-btn" id="downloadEditedBtn">下载修改后的文件</button>
+                </div>
+            </div>
+            
+            <!-- 文件加密 -->
+            <div class="tool-card" id="encryptTool">
+                <div class="tool-header">
+                    <div class="tool-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="tool-title">文件加密</h3>
+                </div>
+                <p class="tool-desc">使用AES-256加密算法保护您的文件，确保只有知道密码的人可以访问。</p>
+                
+                <input type="file" id="encryptInput" class="file-input">
+                <label for="encryptInput" class="file-label">
+                    <i class="fas fa-file"></i>
+                    <span>选择要加密的文件</span>
+                    <div class="file-info">支持任何文件类型</div>
+                </label>
+                
+                <div class="file-selected" id="encryptFileInfo"></div>
+                
+                <div class="options">
+                    <div class="option-group">
+                        <label class="option-label">设置密码</label>
+                        <input type="password" class="option-input" id="encryptPassword" placeholder="输入强密码">
+                    </div>
+                    
+                    <div class="option-group">
+                        <label class="option-label">确认密码</label>
+                        <input type="password" class="option-input" id="encryptPasswordConfirm" placeholder="再次输入密码">
+                    </div>
+                    
+                    <div class="option-group">
+                        <label class="option-label">加密算法</label>
+                        <select class="option-input" id="encryptAlgorithm">
+                            <option value="aes">AES-256 (推荐)</option>
+                            <option value="des">DES</option>
+                            <option value="rabbit">Rabbit</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="encryptBtn">加密文件</button>
+                <button class="btn btn-outline" id="decryptBtn" style="margin-left: 0.5rem;">解密文件</button>
+                
+                <div class="progress-bar" id="encryptProgress">
+                    <div class="progress" id="encryptProgressBar"></div>
+                </div>
+                
+                <div class="result-area" id="encryptResult">
+                    <div class="result-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="result-text">加密完成!</div>
+                    <button class="btn btn-outline download-btn" id="encryptDownload">下载加密文件</button>
+                </div>
+                
+                <div class="result-area" id="decryptResult" style="display: none;">
+                    <div class="result-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="result-text">解密完成!</div>
+                    <button class="btn btn-outline download-btn" id="decryptDownload">下载解密文件</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 XanaduTool | 多功能文件处理平台</p>
+            <p>支持格式: ZIP, TAR, 7Z, PDF, DOCX, XLSX, PPTX, JPG, PNG, GIF, MP3, WAV 等</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 主题切换
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+            const icon = themeToggle.querySelector('i');
+            if (body.classList.contains('dark-theme')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                document.documentElement.style.setProperty('--light', '#1a1a2e');
+                document.documentElement.style.setProperty('--dark', '#f8f9fa');
+                document.body.style.backgroundColor = '#121212';
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                document.documentElement.style.setProperty('--light', '#f8f9fa');
+                document.documentElement.style.setProperty('--dark', '#1a1a2e');
+                document.body.style.backgroundColor = '#f5f7fa';
+            }
+        });
+        
+        // 辅助函数：格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // 辅助函数：获取文件扩展名
+        function getFileExtension(filename) {
+            return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2).toLowerCase();
+        }
+        
+        // 辅助函数：下载文件
+        function downloadFile(content, filename, type = "application/octet-stream") {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+        
+        // 辅助函数：读取文件为ArrayBuffer
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+        
+        // 辅助函数：读取文件为DataURL
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // 辅助函数：读取文件为文本
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+        
+        // 压缩工具逻辑
+        const compressInput = document.getElementById('compressInput');
+        const compressFileInfo = document.getElementById('compressFileInfo');
+        const compressBtn = document.getElementById('compressBtn');
+        const compressProgress = document.getElementById('compressProgress');
+        const compressProgressBar = document.getElementById('compressProgressBar');
+        const compressResult = document.getElementById('compressResult');
+        const compressDownload = document.getElementById('compressDownload');
+        const compressEncrypt = document.getElementById('compressEncrypt');
+        const compressPasswordGroup = document.getElementById('compressPasswordGroup');
+        const compressOutputName = document.getElementById('compressOutputName');
+        const formatBtns = document.querySelectorAll('.format-options .format-btn');
+        
+        let zip = new JSZip();
+        let zipFiles = [];
+        let currentFormat = 'zip';
+        
+        // 格式选择
+        formatBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                formatBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFormat = btn.dataset.format;
+                compressOutputName.value = `archive.${currentFormat}`;
+            });
+        });
+        
+        compressInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                let totalSize = 0;
+                for (let file of e.target.files) {
+                    totalSize += file.size;
+                }
+                
+                compressFileInfo.style.display = 'block';
+                compressFileInfo.innerHTML = `
+                    <div class="file-selected-name">已选择 ${e.target.files.length} 个文件</div>
+                    <div class="file-selected-size">总大小: ${formatFileSize(totalSize)}</div>
+                    <div class="file-selected-type">格式: ${currentFormat.toUpperCase()}</div>
+                `;
+                
+                zipFiles = Array.from(e.target.files);
+            } else {
+                compressFileInfo.style.display = 'none';
+                zipFiles = [];
+            }
+        });
+        
+        compressEncrypt.addEventListener('change', (e) => {
+            compressPasswordGroup.style.display = e.target.checked ? 'block' : 'none';
+        });
+        
+        compressBtn.addEventListener('click', async () => {
+            if (zipFiles.length === 0) {
+                alert('请先选择要压缩的文件');
+                return;
+            }
+            
+            const password = document.getElementById('compressPassword').value;
+            if (compressEncrypt.checked && !password) {
+                alert('请为加密压缩文件设置密码');
+                return;
+            }
+            
+            compressProgress.style.display = 'block';
+            compressResult.style.display = 'none';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 90) progress = 90; // 留10%给实际压缩
+                compressProgressBar.style.width = `${progress}%`;
+            }, 200);
+            
+            try {
+                const zip = new JSZip();
+                
+                // 添加文件到zip
+                for (const file of zipFiles) {
+                    const fileData = await readFileAsArrayBuffer(file);
+                    zip.file(file.name, fileData);
+                }
+                
+                // 生成压缩文件
+                const zipFilename = compressOutputName.value || `archive.${currentFormat}`;
+                const compressionLevel = parseInt(document.getElementById('compressLevel').value);
+                
+                // 注意：JSZip只支持ZIP格式，其他格式需要相应库
+                zip.generateAsync({
+                    type: 'blob',
+                    compression: 'DEFLATE',
+                    compressionOptions: { level: compressionLevel },
+                    encrypt: compressEncrypt.checked,
+                    password: password
+                }, (metadata) => {
+                    // 更新进度条
+                    compressProgressBar.style.width = `${90 + (metadata.percent / 10)}%`;
+                }).then((content) => {
+                    clearInterval(interval);
+                    compressProgressBar.style.width = '100%';
+                    
+                    // 保存zip文件引用供下载
+                    compressDownload.onclick = () => {
+                        downloadFile(content, zipFilename);
+                    };
+                    
+                    setTimeout(() => {
+                        compressProgress.style.display = 'none';
+                        compressResult.style.display = 'block';
+                    }, 500);
+                });
+            } catch (error) {
+                clearInterval(interval);
+                compressProgress.style.display = 'none';
+                alert('压缩失败: ' + error.message);
+                console.error(error);
+            }
+        });
+        
+        // 文件转换工具逻辑
+        const convertInput = document.getElementById('convertInput');
+        const convertFileInfo = document.getElementById('convertFileInfo');
+        const convertBtn = document.getElementById('convertBtn');
+        const convertProgress = document.getElementById('convertProgress');
+        const convertProgressBar = document.getElementById('convertProgressBar');
+        const convertResult = document.getElementById('convertResult');
+        const convertDownload = document.getElementById('convertDownload');
+        const targetFormat = document.getElementById('targetFormat');
+        const convertOptions = document.getElementById('convertOptions');
+        
+        let currentConvertFile = null;
+        
+        convertInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                currentConvertFile = e.target.files[0];
+                
+                convertFileInfo.style.display = 'block';
+                convertFileInfo.innerHTML = `
+                    <div class="file-selected-name">${currentConvertFile.name}</div>
+                    <div class="file-selected-size">大小: ${formatFileSize(currentConvertFile.size)}</div>
+                    <div class="file-selected-type">格式: ${getFileExtension(currentConvertFile.name).toUpperCase()}</div>
+                `;
+                
+                convertResult.style.display = 'none';
+                updateConvertOptions();
+            } else {
+                convertFileInfo.style.display = 'none';
+                currentConvertFile = null;
+            }
+        });
+        
+        targetFormat.addEventListener('change', updateConvertOptions);
+        
+        function updateConvertOptions() {
+            if (!currentConvertFile) return;
+            
+            const fromFormat = getFileExtension(currentConvertFile.name);
+            const toFormat = targetFormat.value;
+            convertOptions.innerHTML = '';
+            
+            // 根据转换类型添加特定选项
+            if (toFormat === 'jpg' || toFormat === 'png' || toFormat === 'webp') {
+                convertOptions.innerHTML = `
+                    <div class="option-group">
+                        <label class="option-label">图片质量 (0-100)</label>
+                        <input type="range" class="option-input" id="imageQuality" min="0" max="100" value="90">
+                        <span id="qualityValue">90%</span>
+                    </div>
+                    <div class="option-group">
+                        <label class="option-label">调整大小</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="number" class="option-input" id="imageWidth" placeholder="宽度" style="flex: 1;">
+                            <input type="number" class="option-input" id="imageHeight" placeholder="高度" style="flex: 1;">
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('imageQuality').addEventListener('input', (e) => {
+                    document.getElementById('qualityValue').textContent = `${e.target.value}%`;
+                });
+            } else if (toFormat === 'pdf') {
+                convertOptions.innerHTML = `
+                    <div class="option-group">
+                        <label class="option-label">页面方向</label>
+                        <select class="option-input" id="pdfOrientation">
+                            <option value="portrait">纵向</option>
+                            <option value="landscape">横向</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label class="option-label">页边距 (mm)</label>
+                        <input type="number" class="option-input" id="pdfMargin" value="10">
+                    </div>
+                `;
+            }
+        }
+        
+        convertBtn.addEventListener('click', async () => {
+            if (!currentConvertFile) {
+                alert('请先选择要转换的文件');
+                return;
+            }
+            
+            const toFormat = targetFormat.value;
+            convertProgress.style.display = 'block';
+            convertResult.style.display = 'none';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                }
+                convertProgressBar.style.width = `${progress}%`;
+            }, 200);
+            
+            try {
+                // 模拟转换过程 - 实际应用中需要根据格式使用相应库
+                const filename = currentConvertFile.name.replace(/\.[^/.]+$/, '') + '.' + toFormat;
+                
+                // 这里只是模拟，实际转换需要相应库
+                setTimeout(() => {
+                    clearInterval(interval);
+                    convertProgressBar.style.width = '100%';
+                    
+                    // 模拟转换后的文件
+                    const convertedContent = `这是模拟的${toFormat.toUpperCase()}文件内容`;
+                    
+                    convertDownload.onclick = () => {
+                        downloadFile(convertedContent, filename);
+                    };
+                    
+                    setTimeout(() => {
+                        convertProgress.style.display = 'none';
+                        convertResult.style.display = 'block';
+                    }, 500);
+                }, 1500);
+            } catch (error) {
+                clearInterval(interval);
+                convertProgress.style.display = 'none';
+                alert('转换失败: ' + error.message);
+                console.error(error);
+            }
+        });
+        
+        // 文件预览与编辑逻辑
+        const previewInput = document.getElementById('previewInput');
+        const previewFileInfo = document.getElementById('previewFileInfo');
+        const previewBtn = document.getElementById('previewBtn');
+        const filePreview = document.getElementById('filePreview');
+        const previewContent = document.getElementById('previewContent');
+        const fileEditor = document.getElementById('fileEditor');
+        const saveEditBtn = document.getElementById('saveEditBtn');
+        const renameBtn = document.getElementById('renameBtn');
+        const fileExtension = document.getElementById('fileExtension');
+        const downloadEditedBtn = document.getElementById('downloadEditedBtn');
+        const editResult = document.getElementById('editResult');
+        
+        let currentFile = null;
+        let originalFilename = '';
+        
+        previewInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                currentFile = e.target.files[0];
+                originalFilename = currentFile.name;
+                
+                previewFileInfo.style.display = 'block';
+                previewFileInfo.innerHTML = `
+                    <div class="file-selected-name">${currentFile.name}</div>
+                    <div class="file-selected-size">大小: ${formatFileSize(currentFile.size)}</div>
+                    <div class="file-selected-type">格式: ${getFileExtension(currentFile.name).toUpperCase()}</div>
+                `;
+                
+                filePreview.style.display = 'none';
+                fileEditor.style.display = 'none';
+                saveEditBtn.style.display = 'none';
+                editResult.style.display = 'none';
+                previewContent.innerHTML = '';
+                fileEditor.value = '';
+            } else {
+                previewFileInfo.style.display = 'none';
+                currentFile = null;
+            }
+        });
+        
+        previewBtn.addEventListener('click', async () => {
+            if (!currentFile) {
+                alert('请先选择要预览的文件');
+                return;
+            }
+            
+            const reader = new FileReader();
+            const extension = getFileExtension(currentFile.name);
+            
+            // 图片预览
+            if (currentFile.type.startsWith('image/')) {
+                reader.onload = (e) => {
+                    previewContent.innerHTML = `<img src="${e.target.result}" style="max-width: 100%;">`;
+                    filePreview.style.display = 'block';
+                    fileEditor.style.display = 'none';
+                    saveEditBtn.style.display = 'none';
+                };
+                reader.readAsDataURL(currentFile);
+            } 
+            // PDF预览
+            else if (extension === 'pdf') {
+                previewContent.innerHTML = `
+                    <p>PDF预览需要PDF.js等库支持</p>
+                    <p>文件名: ${currentFile.name}</p>
+                    <p>大小: ${formatFileSize(currentFile.size)}</p>
+                `;
+                filePreview.style.display = 'block';
+                fileEditor.style.display = 'none';
+                saveEditBtn.style.display = 'none';
+            }
+            // Office文档预览
+            else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension)) {
+                previewContent.innerHTML = `
+                    <p>Office文档预览需要相应库支持</p>
+                    <p>文件名: ${currentFile.name}</p>
+                    <p>大小: ${formatFileSize(currentFile.size)}</p>
+                    <p>建议下载后使用专业软件查看</p>
+                `;
+                filePreview.style.display = 'block';
+                fileEditor.style.display = 'none';
+                saveEditBtn.style.display = 'none';
+            }
+            // 文本文件预览
+            else if (currentFile.type.startsWith('text/') || 
+                      ['txt', 'csv', 'json', 'html', 'css', 'js', 'xml'].includes(extension)) {
+                const text = await readFileAsText(currentFile);
+                previewContent.textContent = text.substring(0, 1000);
+                if (text.length > 1000) {
+                    previewContent.textContent += '... (内容截断)';
+                }
+                filePreview.style.display = 'block';
+                
+                // 显示编辑器
+                fileEditor.value = text;
+                fileEditor.style.display = 'block';
+                saveEditBtn.style.display = 'block';
+            }
+            // 其他文件
+            else {
+                previewContent.innerHTML = `
+                    <p>无法预览此文件类型</p>
+                    <p>文件名: ${currentFile.name}</p>
+                    <p>类型: ${currentFile.type || '未知'}</p>
+                    <p>大小: ${formatFileSize(currentFile.size)}</p>
+                `;
+                filePreview.style.display = 'block';
+                fileEditor.style.display = 'none';
+                saveEditBtn.style.display = 'none';
+            }
+        });
+        
+        saveEditBtn.addEventListener('click', () => {
+            if (!currentFile) return;
+            
+            const editedContent = fileEditor.value;
+            const blob = new Blob([editedContent], { type: currentFile.type });
+            
+            // 设置下载按钮
+            downloadEditedBtn.onclick = () => {
+                let filename = originalFilename;
+                if (fileExtension.value) {
+                    const ext = fileExtension.value.startsWith('.') ? fileExtension.value : '.' + fileExtension.value;
+                    const dotIndex = filename.lastIndexOf('.');
+                    filename = (dotIndex === -1 ? filename : filename.substring(0, dotIndex)) + ext;
+                }
+                downloadFile(blob, filename);
+            };
+            
+            editResult.style.display = 'block';
+        });
+        
+        renameBtn.addEventListener('click', () => {
+            if (!currentFile) {
+                alert('请先选择文件');
+                return;
+            }
+            
+            const newExt = fileExtension.value.trim();
+            if (!newExt) {
+                alert('请输入新的文件后缀');
+                return;
+            }
+            
+            const dotIndex = originalFilename.lastIndexOf('.');
+            const baseName = dotIndex === -1 ? originalFilename : originalFilename.substring(0, dotIndex);
+            const newName = baseName + (newExt.startsWith('.') ? newExt : '.' + newExt);
+            
+            previewFileInfo.querySelector('.file-selected-name').textContent = newName;
+            alert(`文件名已从 ${originalFilename} 改为 ${newName}`);
+        });
+        
+        // 文件加密逻辑
+        const encryptInput = document.getElementById('encryptInput');
+        const encryptFileInfo = document.getElementById('encryptFileInfo');
+        const encryptBtn = document.getElementById('encryptBtn');
+        const decryptBtn = document.getElementById('decryptBtn');
+        const encryptProgress = document.getElementById('encryptProgress');
+        const encryptProgressBar = document.getElementById('encryptProgressBar');
+        const encryptResult = document.getElementById('encryptResult');
+        const encryptDownload = document.getElementById('encryptDownload');
+        const decryptResult = document.getElementById('decryptResult');
+        const decryptDownload = document.getElementById('decryptDownload');
+        const encryptAlgorithm = document.getElementById('encryptAlgorithm');
+        
+        let currentEncryptFile = null;
+        
+        encryptInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                currentEncryptFile = e.target.files[0];
+                
+                encryptFileInfo.style.display = 'block';
+                encryptFileInfo.innerHTML = `
+                    <div class="file-selected-name">${currentEncryptFile.name}</div>
+                    <div class="file-selected-size">大小: ${formatFileSize(currentEncryptFile.size)}</div>
+                    <div class="file-selected-type">格式: ${getFileExtension(currentEncryptFile.name).toUpperCase()}</div>
+                `;
+                
+                encryptResult.style.display = 'none';
+                decryptResult.style.display = 'none';
+            } else {
+                encryptFileInfo.style.display = 'none';
+                currentEncryptFile = null;
+            }
+        });
+        
+        encryptBtn.addEventListener('click', async () => {
+            if (!currentEncryptFile) {
+                alert('请先选择要加密的文件');
+                return;
+            }
+            
+            const password = document.getElementById('encryptPassword').value;
+            const confirmPassword = document.getElementById('encryptPasswordConfirm').value;
+            const algorithm = encryptAlgorithm.value;
+            
+            if (!password || !confirmPassword) {
+                alert('请设置并确认密码');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('两次输入的密码不一致');
+                return;
+            }
+            
+            if (password.length < 8) {
+                alert('密码长度至少为8个字符');
+                return;
+            }
+            
+            encryptProgress.style.display = 'block';
+            encryptResult.style.display = 'none';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                }
+                encryptProgressBar.style.width = `${progress}%`;
+            }, 200);
+            
+            try {
+                const fileData = await readFileAsArrayBuffer(currentEncryptFile);
+                const wordArray = CryptoJS.lib.WordArray.create(fileData);
+                const salt = CryptoJS.lib.WordArray.random(128/8);
+                
+                const key = CryptoJS.PBKDF2(password, salt, {
+                    keySize: algorithm === 'aes' ? 256/32 : 128/32,
+                    iterations: 1000
+                });
+                
+                const iv = CryptoJS.lib.WordArray.random(128/8);
+                
+                let encrypted;
+                if (algorithm === 'aes') {
+                    encrypted = CryptoJS.AES.encrypt(wordArray, key, { 
+                        iv: iv,
+                        padding: CryptoJS.pad.Pkcs7,
+                        mode: CryptoJS.mode.CBC
+                    });
+                } else if (algorithm === 'des') {
+                    encrypted = CryptoJS.DES.encrypt(wordArray, key, { 
+                        iv: iv,
+                        padding: CryptoJS.pad.Pkcs7,
+                        mode: CryptoJS.mode.CBC
+                    });
+                } else {
+                    encrypted = CryptoJS.Rabbit.encrypt(wordArray, key);
+                }
+                
+                // 组合加密数据: salt + iv + ciphertext
+                const result = salt.concat(algorithm === 'rabbit' ? CryptoJS.lib.WordArray.create() : iv).concat(encrypted.ciphertext);
+                const resultArray = new Uint8Array(result.toString(CryptoJS.enc.Latin1).length);
+                for (let i = 0; i < resultArray.length; i++) {
+                    resultArray[i] = result.toString(CryptoJS.enc.Latin1).charCodeAt(i);
+                }
+                
+                clearInterval(interval);
+                encryptProgressBar.style.width = '100%';
+                
+                encryptDownload.onclick = () => {
+                    const filename = currentEncryptFile.name + '.enc';
+                    downloadFile(resultArray, filename);
+                };
+                
+                setTimeout(() => {
+                    encryptProgress.style.display = 'none';
+                    encryptResult.style.display = 'block';
+                }, 500);
+            } catch (error) {
+                clearInterval(interval);
+                encryptProgress.style.display = 'none';
+                alert('加密失败: ' + error.message);
+                console.error(error);
+            }
+        });
+        
+        decryptBtn.addEventListener('click', async () => {
+            if (!currentEncryptFile) {
+                alert('请先选择要解密的文件');
+                return;
+            }
+            
+            const password = document.getElementById('encryptPassword').value;
+            const algorithm = encryptAlgorithm.value;
+            
+            if (!password) {
+                alert('请输入密码');
+                return;
+            }
+            
+            encryptProgress.style.display = 'block';
+            decryptResult.style.display = 'none';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                }
+                encryptProgressBar.style.width = `${progress}%`;
+            }, 200);
+            
+            try {
+                const fileData = await readFileAsArrayBuffer(currentEncryptFile);
+                const encryptedData = new Uint8Array(fileData);
+                const encryptedHex = Array.from(encryptedData).map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                // 提取salt (前16字节)
+                const salt = CryptoJS.enc.Hex.parse(encryptedHex.substring(0, 32));
+                // 提取iv (接下来16字节)
+                const iv = algorithm === 'rabbit' ? null : CryptoJS.enc.Hex.parse(encryptedHex.substring(32, 64));
+                // 剩余部分是密文
+                const ciphertext = CryptoJS.enc.Hex.parse(encryptedHex.substring(algorithm === 'rabbit' ? 32 : 64));
+                
+                const key = CryptoJS.PBKDF2(password, salt, {
+                    keySize: algorithm === 'aes' ? 256/32 : 128/32,
+                    iterations: 1000
+                });
+                
+                let decrypted;
+                if (algorithm === 'aes') {
+                    decrypted = CryptoJS.AES.decrypt(
+                        { ciphertext: ciphertext },
+                        key,
+                        { iv: iv, padding: CryptoJS.pad.Pkcs7, mode: CryptoJS.mode.CBC }
+                    );
+                } else if (algorithm === 'des') {
+                    decrypted = CryptoJS.DES.decrypt(
+                        { ciphertext: ciphertext },
+                        key,
+                        { iv: iv, padding: CryptoJS.pad.Pkcs7, mode: CryptoJS.mode.CBC }
+                    );
+                } else {
+                    decrypted = CryptoJS.Rabbit.decrypt(
+                        { ciphertext: ciphertext },
+                        key
+                    );
+                }
+                
+                const decryptedArray = new Uint8Array(decrypted.toString(CryptoJS.enc.Latin1).length);
+                for (let i = 0; i < decryptedArray.length; i++) {
+                    decryptedArray[i] = decrypted.toString(CryptoJS.enc.Latin1).charCodeAt(i);
+                }
+                
+                clearInterval(interval);
+                encryptProgressBar.style.width = '100%';
+                
+                decryptDownload.onclick = () => {
+                    let filename = currentEncryptFile.name;
+                    if (filename.endsWith('.enc')) {
+                        filename = filename.substring(0, filename.length - 4);
+                    }
+                    downloadFile(decryptedArray, filename);
+                };
+                
+                setTimeout(() => {
+                    encryptProgress.style.display = 'none';
+                    decryptResult.style.display = 'block';
+                }, 500);
+            } catch (error) {
+                clearInterval(interval);
+                encryptProgress.style.display = 'none';
+                alert('解密失败: 密码错误或文件已损坏');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
